@@ -3,19 +3,20 @@ import bmesh
 
 import random
 
-delta = 0.2
+delta = 1
 
-height = 30
+height = 200
 
-width = 40
+width = 200
 
-delta_z = 0.3
+min_z = -1
+max_z = 1
 
 verts = []
 
 for y in range(0,height):
     for x in range(0,width):
-        verts.append( (x*delta, y*delta, delta_z*random.random()-0.5) )
+        verts.append( (x*delta, y*delta, random.randint(min_z, max_z)) )
 
 
 mesh = bpy.data.meshes.new("empty")
@@ -49,3 +50,11 @@ for y in range(0,height-1):
     
 bm.to_mesh(mesh)  
 bm.free() 
+
+bpy.ops.object.mode_set(mode = 'EDIT')
+bpy.ops.mesh.select_all(action='TOGGLE')
+bpy.ops.mesh.normals_make_consistent(inside=False)
+bpy.ops.mesh.faces_shade_smooth()
+bpy.ops.mesh.vertices_smooth()
+bpy.ops.mesh.select_all(action='TOGGLE')
+bpy.ops.object.mode_set(mode = 'OBJECT')
