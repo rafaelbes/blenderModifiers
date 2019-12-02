@@ -34,10 +34,10 @@ def Sierpinski(bm, points, level=0):
         for subTetra in tetraedo:
             Sierpinski(bm, subTetra, level-1)
     else:
+    #Ciração de faces e vertices utilizando o itertools para pegar o grupo de 3 em 3 vértices
         for subTetra in tetraedo:
             verts = [bm.verts.new(p) for p in subTetra]
             faces = [bm.faces.new(face) for face in itertools.combinations(verts, 3)]
-            bmesh.ops.recalc_face_normals(bm, faces=faces)
 
 
 if __name__ == '__main__':
