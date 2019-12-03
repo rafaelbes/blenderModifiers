@@ -7,24 +7,25 @@ class Cube:
     def __init__(self):
         self.vertices = \
                     [
-                        mathutils.Vector((-0.5, -0.5, -0.5)),
-                        mathutils.Vector((0.5, -0.5, -0.5)),
                         mathutils.Vector((0.5, 0.5, -0.5)),
+                        mathutils.Vector((0.5, -0.5, -0.5)),
+                        mathutils.Vector((-0.5, -0.5, -0.5)),
                         mathutils.Vector((-0.5, 0.5, -0.5)),
-                        mathutils.Vector((-0.5, -0.5, 0.5)),
-                        mathutils.Vector((0.5, -0.5, 0.5)),
                         mathutils.Vector((0.5, 0.5, 0.5)),
+                        mathutils.Vector((0.5, -0.5, 0.5)),
+                        mathutils.Vector((-0.5, -0.5, 0.5)),
                         mathutils.Vector((-0.5, 0.5, 0.5))
                     ]
         self.faces = \
             [
+                 [0, 1, 2, 3],
+                 [4, 5, 6, 7],
                  [0, 4, 5, 1],
                  [1, 5, 6, 2],
                  [2, 6, 7, 3],
-                 [3, 7, 4, 0],
-                 [4, 5, 6, 7],
-                 [0, 1, 2, 3]
+                 [4, 0, 3, 7]
              ]
+
 
     def set_new_coord(dx = 0, dy = 0, dz = 0):
         for vert in self.vertices:
