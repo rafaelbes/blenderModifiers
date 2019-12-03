@@ -9,26 +9,8 @@ import bpy
 from math import radians
 
 posAtual = 0
-
-#from bpy import context
-
-##Recebe a scene atual
-#scene = context.scene
-
-## Recebe o 3d cursor
-#cursor = scene.cursor.location
-
-## Recebe o objeto ativo (suponha que so temos um)
-#obj = context.active_object
-
-## Agora faca uma copia do objeto
-#obj_new = obj.copy()
-
-## O objeto nao entra automaticamente em uma nova cena
-#scene.collection.objects.link(obj_new)
-
-## Agora podemos colocar o objeto
-#obj_new.location = cursor
+angle = 0
+numberDegraus = 2
 
 
 class ObjectCursorArray(bpy.types.Operator):
@@ -38,6 +20,7 @@ class ObjectCursorArray(bpy.types.Operator):
     bl_options = {'REGISTER', 'UNDO'}
     
     total: bpy.props.IntProperty(name="Steps", default=2, min=1, max=100)
+    name: bpy.props.StringProperty(name="Test Property", default="A0N2")
     rotacao: bpy.props.IntProperty(name="rotacao", default=0, min=-360, max=360)
     
     def execute(self, context):
@@ -46,43 +29,84 @@ class ObjectCursorArray(bpy.types.Operator):
         obj = context.active_object
         
         obj_size = context.active_object.dimensions
+            
+        string = self.name
         
+        s = string.split("!")
+        print(s)
         
-        for i in range(self.total):
+        for str in s:
+            global posAtual
+            posAtual = 0
+            print("string -> " + str)
+            
+            while (posAtual < len(str)-1):
+                PecorrerString(str)
+            
+            for i in range(numberDegraus):
 
-            msg = "LUCAS"
-            printarMsg(msg)
-            
-            print(str(posAtual))
-            obj_new = obj.copy()
-            scene.collection.objects.link(obj_new)
+                obj_new = obj.copy()
+                scene.collection.objects.link(obj_new)
 
-            bpy.ops.object.select_all( action = 'DESELECT' )
+                bpy.ops.object.select_all( action = 'DESELECT' )
             
-            obj_new.select_set(True)
+                obj_new.select_set(True)
+        
             
-            #obj_new.rotation_euler[2] = 1
-    
-            #obj_new.location.x += (i+0.5)   
-            #obj_new.location.y += obj_size.y * (i+1)
-            #obj_new.location.z += obj_size.z * (i+1)
+                bpy.ops.transform.rotate(value=radians(angle), orient_axis='Z', orient_type='LOCAL')
+                bpy.ops.transform.translate(value=(0, obj_size.y, obj_size.z), orient_type='LOCAL')
             
-            bpy.ops.transform.rotate(value=radians(self.rotacao), orient_axis='Z', orient_type='LOCAL')
-            bpy.ops.transform.translate(value=(0, obj_size.y, obj_size.z), orient_type='LOCAL')
-            
-            obj = obj_new
+                obj = obj_new
         
         return {'FINISHED'}
     
     
+def PecorrerString(string):
+    global posAtual, angle, numberDegraus
     
-def printarMsg(msg):
-    print(msg)
+    if string[posAtual] == 'A':
+        posAtual += 1
+        angle = integer(string)
+        print("angulo -> "+ str(angle))
+    if string[posAtual] == 'N':
+        posAtual += 1
+        numberDegraus = integer(string)
+        
+        print("numero de degraus -> " + str(numberDegraus))
+        
+    else:
+        posAtual += 1
+        
     
-    global posAtual 
-    posAtual = 5
+def integer(string):
+    global posAtual
     
-    msg = 'lima'
+    if "-" in string[posAtual]:
+        posAtual += 1
+        return number(string) * (-1)
+    else:
+        return number(string)
+    
+def number(string):
+    posicao = posAtual
+    
+    while (digit(string)):
+        pass
+    return int(string[posicao: posAtual])
+
+def digit(string):
+    global posAtual
+    print ("["+str(posAtual)+":"+str(len(string))+"]")
+    
+    if(posAtual < len(string)):
+    
+        if (string[posAtual].isnumeric()):
+            posAtual += 1
+            return True
+        else:
+            return False
+    
+    return False
     
     
 def menu_func(self, context):
