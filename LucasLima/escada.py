@@ -19,10 +19,8 @@ class ObjectCursorArray(bpy.types.Operator):
     bl_label = "Criar Escada"
     bl_options = {'REGISTER', 'UNDO'}
     
-    total: bpy.props.IntProperty(name="Steps", default=2, min=1, max=100)
     name: bpy.props.StringProperty(name="Test Property", default="A0N2")
-    rotacao: bpy.props.IntProperty(name="rotacao", default=0, min=-360, max=360)
-    
+   
     def execute(self, context):
         scene = context.scene
         cursor = scene.cursor.location
