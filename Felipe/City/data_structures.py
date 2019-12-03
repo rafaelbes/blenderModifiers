@@ -5,7 +5,7 @@ class Point:
     pass
 
 class Rectangle:
-    def __init__(self,p = Point(0.0, 0.0), w = 1,0, h = 1.0): 
+    def __init__(self,p = Point(0.0, 0.0), w = 1.0, h = 1.0): 
         self.p = p
         self.w = w
         self.h = h
