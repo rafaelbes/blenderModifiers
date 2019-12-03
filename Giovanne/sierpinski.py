@@ -39,19 +39,40 @@ def Sierpinski(bm, points, level=0):
             verts = [bm.verts.new(p) for p in subTetra]
             faces = [bm.faces.new(face) for face in itertools.combinations(verts, 3)]
 
+class ObjectCursorArray(bpy.types.Operator):
+    bl_idname = "object.curso_array"
+    bl_label = "Criar Sierpinski"
+    bl_options = {'REGISTER','UNDO'}
+
+    recursions = bpy.props.IntProperty(name="Recursões", default=1, min=1, max=10)
+    def execute(self,context):
+        number = self.recursions
+        print('Recursões:',number)
+        bm = bmesh.new()
+        tetraedroOrigem = tetraedo(5)
+        Sierpinski(bm, tetraedroOrigem,number)
+
+        #Criação da malha e do objeto
+        me = bpy.data.meshes.new("TetraedroMesh")
+        bm.to_mesh(me)
+        bm.free()
+        obj = bpy.data.objects.new("Tetraedro", me)
+        bpy.context.scene.objects.link(obj)
+        bpy.context.scene.update()
+        return {'FINISHED'}
+
+def menu_func(self, context):
+    self.layout.operator(ObjectCursorArray.bl_idname)
+
+def register():
+    bpy.utils.register_class(ObjectCursorArray)
+    bpy.types.VIEW3D_MT_object.append(menu_func)
+    
+def unregister():
+    bpy.utils.unregister_class(ObjectCursorArray)
+    bpy.types.VIEW3D_MT_OBJECT.remove(menu_func)
 
 if __name__ == '__main__':
-    
+    register()    
 
-    # Criãção do tetraedro frectal
-    bm = bmesh.new()
-    tetraedroOrigem = tetraedo(5)
-    Sierpinski(bm, tetraedroOrigem, level=1)
-
-    #Criação da malha e do objeto
-    me = bpy.data.meshes.new("TetraedroMesh")
-    bm.to_mesh(me)
-    bm.free()
-    obj = bpy.data.objects.new("Tetraedro", me)
-    bpy.context.scene.objects.link(obj)
-    bpy.context.scene.update()
+ 
