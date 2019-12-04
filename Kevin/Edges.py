@@ -5,7 +5,7 @@ import random
 import math
 
 
-def gerarMola(r, grau, delta_z, z):
+def gerarMola(r, grau, delta_z, z, parcial):
 
     verts = []
 
@@ -13,7 +13,7 @@ def gerarMola(r, grau, delta_z, z):
     first = True
     j = 0
 
-    for i in range(0,grau,4):
+    for i in range(0,grau,parcial):
         verts.append( (r*math.cos(i*math.pi/100), r*math.sin(i*math.pi/100), z*delta_z) )
         delta_z += add
         if(first == True):
@@ -47,4 +47,4 @@ def gerarMola(r, grau, delta_z, z):
     bm.to_mesh(mesh)  
     bm.free()
     
-gerarMola(2,720,0.02,1) 
+gerarMola(2,720,0.02,1,4) 
