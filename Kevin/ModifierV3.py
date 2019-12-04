@@ -15,6 +15,8 @@ class Skin4Springs(bpy.types.Operator):
     
     frac = bpy.props.IntProperty(name="Fração", default=15, min=2)
     altura = bpy.props.FloatProperty(name="Altura dos paralelepípedos", default=0.05, min=0.01)
+    fechar_face = bpy.props.BoolProperty(name="Inserir face final", default=False)
+    tirar_face_interna = bpy.props.BoolProperty(name="Não inserir faces internas", default=False)
 
     def execute(self,context):
         
@@ -23,6 +25,8 @@ class Skin4Springs(bpy.types.Operator):
 
         frac = self.frac
         altura = self.altura
+        fechar_face = self.fechar_face
+        tirar_face_interna = self.tirar_face_interna
 
         # convert the current mesh to a bmesh (must be in edit mode)
         bpy.ops.object.mode_set(mode='EDIT')
@@ -73,12 +77,20 @@ class Skin4Springs(bpy.types.Operator):
                 break
             if i == 0:
                 bm.faces.new((lista_para_faces[i], lista_para_faces[i+1], lista_para_faces[i+3],lista_para_faces[i+2]))
-            bm.faces.new((lista_para_faces[i+4], lista_para_faces[i+5], lista_para_faces[i+7], lista_para_faces[i+6]))        
+            if tirar_face_interna == False or i==len(lista_para_faces)-8:
+                bm.faces.new((lista_para_faces[i+4], lista_para_faces[i+5], lista_para_faces[i+7], lista_para_faces[i+6]))        
             bm.faces.new((lista_para_faces[i+1], lista_para_faces[i+5], lista_para_faces[i+7], lista_para_faces[i+3]))
             bm.faces.new((lista_para_faces[i], lista_para_faces[i+4], lista_para_faces[i+6], lista_para_faces[i+2]))
             bm.faces.new((lista_para_faces[i], lista_para_faces[i+4], lista_para_faces[i+5], lista_para_faces[i+1]))
             bm.faces.new((lista_para_faces[i+6], lista_para_faces[i+2], lista_para_faces[i+3], lista_para_faces[i+7]))
-
+        
+        if fechar_face == True:
+            i = len(lista_para_faces)-1
+            bm.faces.new((lista_para_faces[1], lista_para_faces[i-2], lista_para_faces[i], lista_para_faces[3]))
+            bm.faces.new((lista_para_faces[0], lista_para_faces[i-3], lista_para_faces[i-1], lista_para_faces[2]))
+            bm.faces.new((lista_para_faces[0], lista_para_faces[i-3], lista_para_faces[i-2], lista_para_faces[1]))
+            bm.faces.new((lista_para_faces[i-1], lista_para_faces[2], lista_para_faces[3], lista_para_faces[0]))
+        
         # make the bmesh the object's mesh
         bm.to_mesh(mesh)  
         bm.free()  # always do this when finished

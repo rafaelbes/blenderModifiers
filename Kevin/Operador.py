@@ -13,7 +13,7 @@ class SpringGenerator(bpy.types.Operator):
     bl_label = "Spring Generator"
     bl_options = {'REGISTER', 'UNDO'}
     r = bpy.props.FloatProperty(name="Raio", default=2, min=1, max=20)
-    grau = bpy.props.IntProperty(name="Quantidade de voltas", default=720, min=0)
+    grau = bpy.props.IntProperty(name="Tamanho do período em graus", default=720, min=0)
     delta_z = bpy.props.FloatProperty(name="Crescimento da altura", default=0.02)
     z = bpy.props.FloatProperty(name="Altura inicial", default=1)
     parcial = bpy.props.IntProperty(name="Distância em graus entre os vétices", default=4, min=1)
@@ -33,8 +33,8 @@ class SpringGenerator(bpy.types.Operator):
         j = 0
 
         for i in range(0,self.grau,parcial):
-            verts.append( (r*math.cos(i*math.pi/100), r*math.sin(i*math.pi/100), z*delta_z) )
-            delta_z += add
+            verts.append( (r*math.cos(i*math.pi/100), r*math.sin(i*math.pi/100), z+delta_z) )
+            delta_z = add
             if(first == True):
                 first = False
                 j = 0
