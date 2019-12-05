@@ -17,25 +17,38 @@ class Exploder(bpy.types.Operator):
 
     def execute(self, context):
         obj = context.active_object
+        me = obj.data
+        
+        invert = False
+        
+        for x in me.polygons:
+            if (x.select):
+                invert = True
+                break
+                
+        
         bpy.ops.object.mode_set(mode = 'EDIT')
         bpy.ops.mesh.select_all(action='TOGGLE')
+        
+        if (invert):
+            bpy.ops.mesh.select_all(action='TOGGLE')
+        
         bpy.ops.mesh.edge_split()
-        bpy.ops.mesh.select_all(action='TOGGLE')
-        
-        obj = bpy.context.edit_object
-        me = obj.data
-        bm = bmesh.from_edit_mesh(me)
-        
-        bm.faces.ensure_lookup_table()
-        
-        # notice in Bmesh polygons are called faces
-        for f in bm.faces:
-            bmesh.ops.translate(bm, vec=(Vector(f.normal)*self.distance), verts=[v for v in f["geom"] if isinstance(v,bmesh.types.BMVert)])
-
-        # Show the updates in the viewport
-        bmesh.update_edit_mesh(me, True)
-        
+        bpy.ops.mesh.select_all(action='TOGGLE')        
         bpy.ops.object.mode_set(mode = 'OBJECT')
+        
+        me = obj.data
+        vertices = me.vertices
+        for v in vertices:
+            n = v.normal
+            
+            p = v.co
+            p[0] += n[0]*self.distance
+            p[1] += n[1]*self.distance
+            p[2] += n[2]*self.distance
+            
+            v.co = p
+        
         return {'FINISHED'}
 
 

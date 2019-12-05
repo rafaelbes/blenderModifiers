@@ -72,7 +72,7 @@ class Cityfy(bpy.types.Operator):
     min_h = bpy.props.FloatProperty(name="Min. Height", default=1.0, min=1.0, max=1000.0) 
     max_h = bpy.props.FloatProperty(name="Max. Height", default=5.0, min=1.0, max=1000.0) 
     n_buildings = bpy.props.IntProperty(name="Buildings", default=10, min=1, max=100000) 
-    floor_height = bpy.props.FloatProperty(name="Floor Height", default=1.0, min=0.001, max=1000.0) 
+    floor_height = bpy.props.IntProperty(name="Floor Height", default=1, min=1, max=1000) 
     max_floors = bpy.props.IntProperty(name="Max. Floors", default=20, min=1, max=99999) 
     prob = bpy.props.FloatProperty(name="Dist. Big Buildings", default=0.5, min=0.000001, max=100000.0) 
     #ndex = bpy.props.IntProperty(name="Dist. Big Buildings", default=5, min=0, max=10) 
