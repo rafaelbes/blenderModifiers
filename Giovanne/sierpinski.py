@@ -12,11 +12,8 @@ def tetraedo(r=1, origin=(0, 0, 0)):
     #baseada no calculo da area,altura e raio
     area = 4*r/sqrt(6)
     h = area*sqrt(6)/3
-    points = [( sqrt(3)*area/3,  0, -r/3), \
-              (-sqrt(3)*area/6, -0.5*area, -r/3), \
-              (-sqrt(3)*area/6,  0.5*area, -r/3), \
-              (0, 0, sqrt(6)*area/3 - r/3)]
-
+    points = [( sqrt(3)*area/3,  0, -r/3), (-sqrt(3)*area/6, -0.5*area, -r/3), \
+              (-sqrt(3)*area/6,  0.5*area, -r/3), (0, 0, sqrt(6)*area/3 - r/3)]
     points = [Vector(p) + origin for p in points]
     return points
 
@@ -38,6 +35,7 @@ def Sierpinski(bm, points, level=0):
         for subTetra in tetraedo:
             verts = [bm.verts.new(p) for p in subTetra]
             faces = [bm.faces.new(face) for face in itertools.combinations(verts, 3)]
+            bmesh.ops.recalc_face_normals(bm, faces=faces)
 
 class ObjectCursorArray(bpy.types.Operator):
     bl_idname = "object.curso_array"
