@@ -19,9 +19,11 @@ class SpringGenerator(bpy.types.Operator):
     verts = bpy.props.IntProperty(name="Quantidade de vértices na mola", default=9, min=4)
     
     def execute(self,context):
-    
+        
+        # Criando o vetor de vértices
         verts = []
         
+        # Coletando os parâmetros do usuário
         delta_z = self.max_z / self.verts 
         grau = self.grau
         r = self.r
@@ -32,7 +34,8 @@ class SpringGenerator(bpy.types.Operator):
         first = True
         j = 0
 
-        for i in range(0,self.grau,parcial):
+        # Vamos criando os vértices da mola
+        for i in range(0,grau,parcial):
             verts.append( (r*math.cos(i*math.pi/100), r*math.sin(i*math.pi/100), z+delta_z) )
             delta_z += add
             if(first == True):
@@ -42,32 +45,38 @@ class SpringGenerator(bpy.types.Operator):
             if(i == grau-1):
                 continue
         
-
+        # Criando a malha para podemos adicionar os vértices a ela
         mesh = bpy.data.meshes.new("empty")
         obj = bpy.data.objects.new("Spring",mesh)
 
+        # Capturando a cena atual e inserindo o objeto nela
         scene = bpy.context.scene
-        scene.objects.link(obj)  # put the object into the scene (link)
-        scene.objects.active = obj  # set as the active object in the scene
-        obj.select = True  # select object
+        scene.objects.link(obj) 
+        scene.objects.active = obj
+        obj.select = True 
 
+        # Convertendo a malha criada anteriormente para bmesh para facilitar a edição
         mesh = bpy.context.object.data
         bm = bmesh.new()
 
+        # Inserimos os vértices criados na malha
         for v in verts:
             bm.verts.new(v)
-        
+        # Criamos as arestas ligando os vértices
         for j in range(0,len(bm.verts)-1):
             bm.verts.ensure_lookup_table()
             v1 = bm.verts[j]
             v2 = bm.verts[j+1]
             bm.edges.new((v1, v2))
 
-        bm.to_mesh(mesh)  
+        # Convertemos as alterações feitas na malha do bmesh para a malha original
+        bm.to_mesh(mesh)
+        # Liberamos a malha para previnir futuras alterações  
         bm.free()
         
         return {'FINISHED'}
 
+# Funções necessárias para inserir o operador no menu
 def menu_func(self, context):
     self.layout.operator(SpringGenerator.bl_idname)
     

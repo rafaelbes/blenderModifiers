@@ -20,46 +20,43 @@ class Skin4Springs(bpy.types.Operator):
 
     def execute(self,context):
         
+        # Pegando o objeto selecionado e alocando uma nova malha bmesh
         mesh = bpy.context.object.data
         bm = bmesh.new()
-
+        
+        # Coletando os parãmetros inseridos pelo usuário
         frac = self.frac
         altura = self.altura
         fechar_face = self.fechar_face
         tirar_face_interna = self.tirar_face_interna
 
-        # convert the current mesh to a bmesh (must be in edit mode)
+        # Convertendo o objeto selecionado numa malha do bmesh
         bpy.ops.object.mode_set(mode='EDIT')
         bm.from_mesh(mesh)
         bpy.ops.object.mode_set(mode='OBJECT')  # return to object mode
 
+        # Vetores utilizados para manter a sequência de criação dos vértices
         reserva = bm.verts[:]
         lista_para_faces = []
 
         bm.verts.ensure_lookup_table()
-        #print("Vértice Corno: x="+str(bm.verts[len(bm.verts)-1].co.x)+" y="+str(bm.verts[len(bm.verts)-1].co.y)+" z="+str(bm.verts[len(bm.verts)-1].co.z))
-
-
+        
+        # Gerando as espirais secundárias e criando suas respectivas arestas
         for i in reserva:
             bm.verts.ensure_lookup_table()
-            #print("Vértice base x="+str(i.co.x) + "  y=" + str(i.co.y) + " z=" + str(i.co.z))
             bm.verts.ensure_lookup_table()
             v1 = bm.verts.new((i.co.x + i.co.x/frac, i.co.y + i.co.y/frac, i.co.z))  # add a new vert
             lista_para_faces.append(v1)
             bm.verts.ensure_lookup_table()
-            #print("V1: x="+str(v1.co.x)+" y="+ str(v1.co.y)+" z="+ str(v1.co.z)+"\n")
             v2 = bm.verts.new((i.co.x + i.co.x/frac, i.co.y + i.co.y/frac, i.co.z + altura))
             lista_para_faces.append(v2)
             bm.verts.ensure_lookup_table()
-            #print("V2: x="+str(v2.co.x)+" y="+ str(v2.co.y)+" z="+ str(v2.co.z)+"\n")
             v3 = bm.verts.new((i.co.x - i.co.x/frac, i.co.y - i.co.y/frac, i.co.z))    
             lista_para_faces.append(v3)
             bm.verts.ensure_lookup_table()
-            #print("V3: x="+str(v3.co.x)+" y="+ str(v3.co.y)+" z="+ str(v3.co.z)+"\n")
             v4 = bm.verts.new((i.co.x - i.co.x/frac, i.co.y - i.co.y/frac, i.co.z + altura))
             lista_para_faces.append(v4)
             bm.verts.ensure_lookup_table()
-            #print("V4: x="+str(v4.co.x)+" y="+ str(v4.co.y)+" z="+ str(v4.co.z)+"\n")
             bm.edges.new((v1, v2))
             bm.verts.ensure_lookup_table()
             bm.edges.new((v3, v4))
@@ -70,20 +67,23 @@ class Skin4Springs(bpy.types.Operator):
             bm.verts.ensure_lookup_table()
             bm.verts.remove(i)
 
-        #print("Tamanho do reserva: "+str(len(reserva)) + " Tamanho do lista_para_faces: " + str(len(lista_para_faces)))
-
+        # Gerando as faces do objeto
         for i in range(0,len(lista_para_faces),4):
+            # Condição para não acessar posições inválidas da memória
             if i+7 > len(lista_para_faces):
                 break
-            if i == 0:
+            # Condição para remover as faces internas e não haver faces repetidas
+            if i == 0 and fechar_face == False:
                 bm.faces.new((lista_para_faces[i], lista_para_faces[i+1], lista_para_faces[i+3],lista_para_faces[i+2]))
-            if tirar_face_interna == False or i==len(lista_para_faces)-8:
+            # Condição para remover as faces internas
+            if tirar_face_interna == False or i==len(lista_para_faces)-8 and fechar_face == False:
                 bm.faces.new((lista_para_faces[i+4], lista_para_faces[i+5], lista_para_faces[i+7], lista_para_faces[i+6]))        
             bm.faces.new((lista_para_faces[i+1], lista_para_faces[i+5], lista_para_faces[i+7], lista_para_faces[i+3]))
             bm.faces.new((lista_para_faces[i], lista_para_faces[i+4], lista_para_faces[i+6], lista_para_faces[i+2]))
             bm.faces.new((lista_para_faces[i], lista_para_faces[i+4], lista_para_faces[i+5], lista_para_faces[i+1]))
             bm.faces.new((lista_para_faces[i+6], lista_para_faces[i+2], lista_para_faces[i+3], lista_para_faces[i+7]))
         
+        # Fechando a ultima face, caso o usuário deseje
         if fechar_face == True:
             i = len(lista_para_faces)-1
             bm.faces.new((lista_para_faces[1], lista_para_faces[i-2], lista_para_faces[i], lista_para_faces[3]))
@@ -91,12 +91,21 @@ class Skin4Springs(bpy.types.Operator):
             bm.faces.new((lista_para_faces[0], lista_para_faces[i-3], lista_para_faces[i-2], lista_para_faces[1]))
             bm.faces.new((lista_para_faces[i-1], lista_para_faces[2], lista_para_faces[3], lista_para_faces[0]))
         
-        # make the bmesh the object's mesh
+        # Transformar a malha modificada para uma malha normal do blender
         bm.to_mesh(mesh)  
-        bm.free()  # always do this when finished
+        
+        # Consertar as normais da malha
+        bpy.ops.object.mode_set(mode = 'EDIT')
+        bpy.ops.mesh.select_all(action='TOGGLE')
+        bpy.ops.mesh.normals_make_consistent(inside=False)
+        bpy.ops.mesh.select_all(action='TOGGLE')
+        bpy.ops.object.mode_set(mode = 'OBJECT')
+        
+        bm.free()  # Liberar a malha e não permitir mais edições
         
         return {'FINISHED'}
 
+# Funções necessárias para inserção do operador no menu
 def menu_func(self, context):
     self.layout.operator(Skin4Springs.bl_idname)
     
