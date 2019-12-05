@@ -1,5 +1,5 @@
-import math
 import bpy
+import math
 import mathutils
 
 class Cube:
@@ -26,25 +26,22 @@ class Cube:
                  [4, 0, 3, 7]
              ]
 
+def to_list_of_lists(vertex_list):
+    cubeVertex = []
+    for v in vertex_list:
+        cubeVertex.append([v[0], v[1], v[2]])
+    return cubeVertex
 
-    def set_new_coord(dx = 0, dy = 0, dz = 0):
-        for vert in self.vertices:
-            vert[0] += dx
-            vert[1] += dy
-            vert[2] += dz
-
-class minecraftOperator(bpy.types.Operator):
-    """My Object Moving Script"""      # Use this as a tooltip for menu items and buttons.
-    bl_idname = "object.minecraf_operator"        # Unique identifier for buttons and menu items to reference.
-    bl_label = "Minecraft Operator"         # Display name in the interface.
-    bl_options = {'REGISTER', 'UNDO'}  # Enable undo for the operator.
-
-    string = bpy.props.StringProperty(name="String de referência", description="Indica o número e a direção para criação dos cubos", 
-                            default="10d-20c-10e-10e-20b-10d-20c-10b-10e-20d-10ce-10be-10bd-10cd-10cfe", 
-                            maxlen=100, options={'ANIMATABLE'})
-
-    def execute(self, context):        # execute() is called when running the operator.
-        comands = string.split("-")
+class MinecraftOperator(bpy.types.Operator):
+    bl_idname = "object.minecraft_operator"
+    bl_label = "Minecraft Operator"
+    bl_options = {'REGISTER', 'UNDO'}
+    my_string = bpy.props.StringProperty(name="String de referência", 
+    default="20c-10d-20b-10e-20t-10d-20c-20f-10e-20t-10d-10e-20b-10d-20f")
+    
+    def execute(self, context):
+        print("String: ", self.my_string)
+        comands = self.my_string.split("-")
         scene = bpy.context.scene
         cube = Cube()
         NewMesh = bpy.data.meshes.new("CuboMeshe")
@@ -53,6 +50,8 @@ class minecraftOperator(bpy.types.Operator):
         NewObj = bpy.data.objects.new("Cubo", NewMesh)
         scene.objects.link(NewObj)
         scene.objects.active = NewObj
+        cubes_positions = []
+        cubes_positions.append(to_list_of_lists(cube.vertices))
         for comand in comands:
             try:
                 qtd_cubes = int(comand[:-1])
@@ -65,91 +64,99 @@ class minecraftOperator(bpy.types.Operator):
                     qtd_cubes = int(comand[:-3])
                     direction = comand[-3:]
             for it in range(qtd_cubes):
-                if(direction == "cfe"):
+                if(direction == "cfe" or direction == "cef" or direction == "efc" or direction == "ecf"
+                or direction == "fec" or direction == "fce"):
                     for j in cube.vertices:
                         j[0] -= 1
                         j[1] += 1
                         j[2] += 1
-                elif(direction == "cfd"):
+                elif(direction == "cfd" or direction == "cdf" or direction == "dcf" or direction == "dfc"
+                or direction == "fcd" or direction == "fdc"):
                     for j in cube.vertices:
                         j[0] += 1
                         j[1] += 1
                         j[2] += 1
-                elif(direction == "cte"):
+                elif(direction == "cte" or direction == "cet" or direction == "ect" or direction == "etc"
+                or direction == "tce" or direction == "tec"):
                     for j in cube.vertices:
                         j[0] -= 1
                         j[1] -= 1
                         j[2] += 1
-                elif(direction == "ctd"):
+                elif(direction == "ctd" or direction == "cdt" or direction == "dct" or direction == "dtc"
+                or direction == "tcd" or direction == "tdc"):
                     for j in cube.vertices:
                         j[0] += 1
                         j[1] -= 1
                         j[2] += 1
-                elif(direction == "bfe"):
+                elif(direction == "bfe" or direction == "bef" or direction == "ebf" or direction == "efb"
+                or direction == "feb" or direction == "fbe"):
                     for j in cube.vertices:
                         j[0] -= 1
                         j[1] += 1
                         j[2] -= 1
-                elif(direction == "bfd"):
+                elif(direction == "bfd" or direction == "bdf" or direction == "dbf" or direction == "dfb"
+                or direction == "fdb" or direction == "fbd"):
                     for j in cube.vertices:
                         j[0] += 1
                         j[1] += 1
                         j[2] -= 1
-                elif(direction == "bte"):
+                elif(direction == "bte" or direction == "bet" or direction == "ebt" or direction == "etb"
+                or direction == "tbe" or direction == "teb"):
                     for j in cube.vertices:
                         j[0] -= 1
                         j[1] -= 1
                         j[2] -= 1
-                elif(direction == "btd"):
+                elif(direction == "btd" or direction == "tdb" or direction == "dbt" or direction == "dtb"
+                or direction == "bdt" or direction == "tbd"):
                     for j in cube.vertices:
                         j[0] += 1
                         j[1] -= 1
                         j[2] += 1
-                elif(direction[-2:] == "ce"):
+                elif(direction[-2:] == "ce" or direction[-2:] == "ec"):
                     for j in cube.vertices:
                         j[0] -= 1
                         j[2] += 1
-                elif(direction[-2:] == "cd"):
+                elif(direction[-2:] == "cd" or direction[-2:] == "dc"):
                     for j in cube.vertices:
                         j[0] += 1
                         j[2] += 1
-                elif(direction[-2:] == "cf"):
+                elif(direction[-2:] == "cf" or direction[-2:] == "fc"):
                     for j in cube.vertices:
                         j[1] += 1
                         j[2] += 1
-                elif(direction[-2:] == "ct"):
+                elif(direction[-2:] == "ct" or direction[-2:] == "tc"):
                     for j in cube.vertices:
                         j[1] -= 1
                         j[2] += 1
-                elif(direction[-2:] == "be"):
+                elif(direction[-2:] == "be" or direction[-2:] == "eb"):
                     for j in cube.vertices:
                         j[0] -= 1
                         j[2] -= 1
-                elif(direction[-2:] == "bd"):
+                elif(direction[-2:] == "bd" or direction[-2:] == "db"):
                     for j in cube.vertices:
                         j[0] += 1
                         j[2] -= 1
-                elif(direction[-2:] == "bf"):
+                elif(direction[-2:] == "bf" or direction[-2:] == "fb"):
                     for j in cube.vertices:
                         j[1] += 1
                         j[2] -= 1
-                elif(direction[-2:] == "bt"):
+                elif(direction[-2:] == "bt" or direction[-2:] == "tb"):
                     for j in cube.vertices:
                         j[1] -= 1
                         j[2] -= 1
-                elif(direction[-2:] == "fe"):
+                elif(direction[-2:] == "fe" or direction[-2:] == "ef"):
                     for j in cube.vertices:
                         j[0] -= 1
                         j[1] += 1
-                elif(direction[-2:] == "fd"):
+                elif(direction[-2:] == "fd" or direction[-2:] == "df"):
                     for j in cube.vertices:
                         j[0] += 1
                         j[1] += 1
-                elif(direction[-2:] == "te"):
+                elif(direction[-2:] == "te" or direction[-2:] == "et"):
                     for j in cube.vertices:
                         j[0] -= 1
                         j[1] -= 1
-                elif(direction[-2:] == "td"):
+                elif(direction[-2:] == "td" or direction[-2:] == "dt"):
                     for j in cube.vertices:
                         j[0] += 1
                         j[1] -= 1
@@ -171,21 +178,30 @@ class minecraftOperator(bpy.types.Operator):
                 elif(direction[-1] == "t"):
                     for j in cube.vertices:
                         j[1] -= 1
-                NewMesh = bpy.data.meshes.new("CuboMeshe")
-                NewMesh.from_pydata(cube.vertices, [], cube.faces)
-                NewMesh.update()
-                NewObj = bpy.data.objects.new("Cubo", NewMesh)
-                scene.objects.link(NewObj)
-                scene.objects.active = NewObj
+                if(to_list_of_lists(cube.vertices) not in cubes_positions):
+                    NewMesh = bpy.data.meshes.new("CuboMeshe")
+                    NewMesh.from_pydata(cube.vertices, [], cube.faces)
+                    NewMesh.update()
+                    NewObj = bpy.data.objects.new("Cubo", NewMesh)
+                    scene.objects.link(NewObj)
+                    scene.objects.active = NewObj
+                    cubes_positions.append(to_list_of_lists(cube.vertices))
+        item='MESH'
+        bpy.ops.object.select_all(action='DESELECT')
+        bpy.ops.object.select_by_type(type=item)
+        bpy.ops.object.join()
+        return {'FINISHED'}
 
-        return {'FINISHED'}            # Lets Blender know the operator finished successfully.
+def layout(self, context):
+    self.layout.operator(MinecraftOperator.bl_idname)
 
 def register():
-    bpy.utils.register_class(minecraftOperator)
-
-
+    bpy.utils.register_class(MinecraftOperator)
+    bpy.types.VIEW3D_MT_object.append(layout)
+    
 def unregister():
-    bpy.utils.unregister_class(minecraftOperator)
+    bpy.utils.unregister_class(MinecraftOperator)
+    bpy.types.VIEW3D_MT_OBJECT.remove(layout)
 
-if __name__ == "__main__":
-   register()
+if __name__ == '__main__':
+    register()    
