@@ -44,7 +44,7 @@ class MinecraftOperator(bpy.types.Operator):
         comands = self.my_string.split("-")
         scene = bpy.context.scene
         cube = Cube()
-        NewMesh = bpy.data.meshes.new("CuboMeshe")
+        NewMesh = bpy.data.meshes.new("CuboMesh")
         NewMesh.from_pydata(cube.vertices, [], cube.faces)
         NewMesh.update()
         NewObj = bpy.data.objects.new("Cubo", NewMesh)
@@ -179,16 +179,18 @@ class MinecraftOperator(bpy.types.Operator):
                     for j in cube.vertices:
                         j[1] -= 1
                 if(to_list_of_lists(cube.vertices) not in cubes_positions):
-                    NewMesh = bpy.data.meshes.new("CuboMeshe")
+                    NewMesh = bpy.data.meshes.new("CuboMesh")
                     NewMesh.from_pydata(cube.vertices, [], cube.faces)
                     NewMesh.update()
                     NewObj = bpy.data.objects.new("Cubo", NewMesh)
                     scene.objects.link(NewObj)
                     scene.objects.active = NewObj
                     cubes_positions.append(to_list_of_lists(cube.vertices))
-        item='MESH'
         bpy.ops.object.select_all(action='DESELECT')
-        bpy.ops.object.select_by_type(type=item)
+        objects = bpy.context.scene.objects
+        for obj in objects:
+            if obj.name.startswith("Cubo") :
+                obj.select = True
         bpy.ops.object.join()
         return {'FINISHED'}
 
