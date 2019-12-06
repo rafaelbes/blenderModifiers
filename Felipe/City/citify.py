@@ -66,13 +66,14 @@ class Cityfy(bpy.types.Operator):
     #width = bpy.props.FloatProperty(name="Width", default=100.0, min=1.0, max=1000.0)
     #height = bpy.props.FloatProperty(name="Height", default=100.0, min=1.0, max=1000.0) 
     seed = bpy.props.IntProperty(name="Seed", default=1, min=0, max=9999999) 
+    simplyfied = bpy.props.BoolProperty(name="Simplified", default=True)
     radius = bpy.props.FloatProperty(name="Area", default=60.0, min=1.0, max=1000.0) 
     min_w = bpy.props.FloatProperty(name="Min. Width", default=1.0, min=1.0, max=1000.0) 
     max_w = bpy.props.FloatProperty(name="Max. Width", default=5.0, min=1.0, max=1000.0) 
     min_h = bpy.props.FloatProperty(name="Min. Height", default=1.0, min=1.0, max=1000.0) 
     max_h = bpy.props.FloatProperty(name="Max. Height", default=5.0, min=1.0, max=1000.0) 
     n_buildings = bpy.props.IntProperty(name="Buildings", default=10, min=1, max=100000) 
-    floor_height = bpy.props.IntProperty(name="Floor Height", default=1, min=1, max=1000) 
+    floor_height = bpy.props.FloatProperty(name="Floor Height", default=3.0, min=0.001, max=1000.0) 
     max_floors = bpy.props.IntProperty(name="Max. Floors", default=20, min=1, max=99999) 
     prob = bpy.props.FloatProperty(name="Dist. Big Buildings", default=0.5, min=0.000001, max=100000.0) 
     #ndex = bpy.props.IntProperty(name="Dist. Big Buildings", default=5, min=0, max=10) 
@@ -153,40 +154,51 @@ class Cityfy(bpy.types.Operator):
         #return coords[index]
         return (coords[index][0],coords[5][1],coords[index][2],coords[index][3])
 
-    def rise_building(self, bm):
-        
-        #bpy.ops.object.mode_set(mode = 'EDIT')
-        #bpy.ops.object.mode_set(mode = 'OBJECT')
-        '''
-        bpy.context.space_data.transform_orientation = 'NORMAL'
-        
-        for f in self.bases:
-            f.select = True
-            bpy.ops.object.mode_set(mode = 'EDIT')
-            bpy.ops.mesh.extrude_region_move(MESH_OT_extrude_region={"mirror":False}, TRANSFORM_OT_translate={"value":(0, 0, 3.57918), "constraint_axis":(False, False, True), "constraint_orientation":'NORMAL', "mirror":False, "proportional":'DISABLED', "proportional_edit_falloff":'RANDOM', "proportional_size":11.9182, "snap":False, "snap_target":'CLOSEST', "snap_point":(0, 0, 0), "snap_align":False, "snap_normal":(0, 0, 0), "gpencil_strokes":False, "texture_space":False, "remove_on_cancel":False, "release_confirm":False, "use_accurate":False})
-            bpy.ops.object.mode_set(mode = 'OBJECT')
-            f.select = False
+    def rise_building(self):
+        obj = bpy.context.selected_objects[0]
+        me = obj.data
 
+        #s = len(mesh.polygons)
+
+        polys = me.polygons
+
+
+        for i in range(0,len(polys)):
+            floors = random.randint(0,self.max_floors)
             
-        bpy.context.space_data.transform_orientation = 'GLOBAL'
-        '''
+            polys[i].select = True
+            
+            bpy.ops.object.mode_set(mode = 'EDIT')
+            
+            
+            for x in range(0,floors):
+                        
+                bpy.ops.mesh.extrude_region_move(MESH_OT_extrude_region={"mirror":False}, TRANSFORM_OT_translate={"value":(0, 0, self.floor_height), "constraint_axis":(False, False, True), "constraint_orientation":'NORMAL', "mirror":False, "proportional":'DISABLED', "proportional_edit_falloff":'RANDOM', "proportional_size":11.9182, "snap":False, "snap_target":'CLOSEST', "snap_point":(0, 0, 0), "snap_align":False, "snap_normal":(0, 0, 0), "gpencil_strokes":False, "texture_space":False, "remove_on_cancel":False, "release_confirm":False, "use_accurate":False})
+
+                bpy.ops.mesh.extrude_region_move(MESH_OT_extrude_region={"mirror":False}, TRANSFORM_OT_translate={"value":(0, 0, 0), "constraint_axis":(False, False, True), "constraint_orientation":'NORMAL', "mirror":False, "proportional":'DISABLED', "proportional_edit_falloff":'RANDOM', "proportional_size":11.9182, "snap":False, "snap_target":'CLOSEST', "snap_point":(0, 0, 0), "snap_align":False, "snap_normal":(0, 0, 0), "gpencil_strokes":False, "texture_space":False, "remove_on_cancel":False, "release_confirm":False, "use_accurate":False})
+                bpy.ops.transform.resize(value=(1.05, 1.05, 1.05), constraint_axis=(False, False, False), constraint_orientation='GLOBAL', mirror=False, proportional='DISABLED', proportional_edit_falloff='RANDOM', proportional_size=11.9182)
+                bpy.ops.mesh.extrude_region_move(MESH_OT_extrude_region={"mirror":False}, TRANSFORM_OT_translate={"value":(0, 0, self.floor_height*0.05), "constraint_axis":(False, False, True), "constraint_orientation":'NORMAL', "mirror":False, "proportional":'DISABLED', "proportional_edit_falloff":'RANDOM', "proportional_size":11.9182, "snap":False, "snap_target":'CLOSEST', "snap_point":(0, 0, 0), "snap_align":False, "snap_normal":(0, 0, 0), "gpencil_strokes":False, "texture_space":False, "remove_on_cancel":False, "release_confirm":False, "use_accurate":False})
+
+                bpy.ops.mesh.extrude_region_move(MESH_OT_extrude_region={"mirror":False}, TRANSFORM_OT_translate={"value":(0, 0, 0), "constraint_axis":(False, False, True), "constraint_orientation":'NORMAL', "mirror":False, "proportional":'DISABLED', "proportional_edit_falloff":'RANDOM', "proportional_size":11.9182, "snap":False, "snap_target":'CLOSEST', "snap_point":(0, 0, 0), "snap_align":False, "snap_normal":(0, 0, 0), "gpencil_strokes":False, "texture_space":False, "remove_on_cancel":False, "release_confirm":False, "use_accurate":False})
+                bpy.ops.transform.resize(value=(0.955, 0.955, 0.955), constraint_axis=(False, False, False), constraint_orientation='GLOBAL', mirror=False, proportional='DISABLED', proportional_edit_falloff='RANDOM', proportional_size=11.9182)
+
+
+            bpy.ops.mesh.select_all(action='TOGGLE')
+
+            bpy.ops.object.mode_set(mode = 'OBJECT')
         
+        
+    def rise_building2(self, bm):
+        
+
         for b in self.bases:
             #area = f.calc_area()
             
-            floors = random.randint(self.floor_height,self.floor_height*self.max_floors)
+            floors = random.randint(0,self.max_floors)
             
             top = bmesh.ops.extrude_face_region(bm, geom=[b])
-            bmesh.ops.translate(bm, vec=Vector((0,0,floors)), verts=[v for v in top["geom"] if isinstance(v,bmesh.types.BMVert)])
-            
-            '''
-            while(floors > 0):
-                top = bmesh.ops.extrude_face_region(bm, geom=[next])
-                next = bmesh.ops.translate(bm, vec=Vector((0,0,2)), verts=[v for v in top["geom"] if isinstance(v,bmesh.types.BMVert)])
-                
-                floors -= 1
-            '''
-            
+            bmesh.ops.translate(bm, vec=Vector((0,0,self.floor_height*floors)), verts=[v for v in top["geom"] if isinstance(v,bmesh.types.BMVert)])
+
             bm.normal_update()
         
         
@@ -224,12 +236,14 @@ class Cityfy(bpy.types.Operator):
 
                 self.place_building(x,y,w,h, bm)
 
-        self.rise_building(bm)
+        if (self.simplyfied):
+            self.rise_building2(bm)
         
         bm.to_mesh(mesh)  
         bm.free() 
         
-        
+        if (not self.simplyfied):
+            self.rise_building()
         
         obj.select = False
         
