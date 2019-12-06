@@ -1,6 +1,7 @@
 import bpy
 import math
 import mathutils
+import random
 
 class Cube:
     
@@ -192,6 +193,7 @@ class MinecraftOperator(bpy.types.Operator):
             if obj.name.startswith("Cubo") :
                 obj.select = True
         bpy.ops.object.join()
+
         return {'FINISHED'}
 
 def layout(self, context):
