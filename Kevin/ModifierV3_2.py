@@ -1,5 +1,5 @@
 bl_info = {
-            "name": "Skin4Springs",
+            "name": "Skin4Springs2",
             "category": "Object",            
 }
 
@@ -7,10 +7,10 @@ import bpy
 import bmesh
 
 
-class Skin4Springs(bpy.types.Operator):
-    """Skin4Spring Modifier"""
-    bl_idname = "object.skin4springs"
-    bl_label = "Skin4Springs"
+class Skin4Springs2(bpy.types.Operator):
+    """Skin4Spring2 Modifier"""
+    bl_idname = "object.skin4springs2"
+    bl_label = "Skin4Springs2"
     bl_options = {'REGISTER', 'UNDO'}
     
     frac = bpy.props.IntProperty(name="Fração", default=15, min=2)
@@ -45,13 +45,13 @@ class Skin4Springs(bpy.types.Operator):
         for i in reserva:
             bm.verts.ensure_lookup_table()
             bm.verts.ensure_lookup_table()
-            v1 = bm.verts.new((i.co.x + i.co.x/frac, i.co.y + i.co.y/frac, i.co.z))  # add a new vert
+            v1 = bm.verts.new((i.co.x + i.co.x/frac, i.co.y + i.co.y/frac, i.co.z - altura))  # add a new vert
             lista_para_faces.append(v1)
             bm.verts.ensure_lookup_table()
             v2 = bm.verts.new((i.co.x + i.co.x/frac, i.co.y + i.co.y/frac, i.co.z + altura))
             lista_para_faces.append(v2)
             bm.verts.ensure_lookup_table()
-            v3 = bm.verts.new((i.co.x - i.co.x/frac, i.co.y - i.co.y/frac, i.co.z))    
+            v3 = bm.verts.new((i.co.x - i.co.x/frac, i.co.y - i.co.y/frac, i.co.z - altura))    
             lista_para_faces.append(v3)
             bm.verts.ensure_lookup_table()
             v4 = bm.verts.new((i.co.x - i.co.x/frac, i.co.y - i.co.y/frac, i.co.z + altura))
@@ -107,14 +107,14 @@ class Skin4Springs(bpy.types.Operator):
 
 # Funções necessárias para inserção do operador no menu
 def menu_func(self, context):
-    self.layout.operator(Skin4Springs.bl_idname)
+    self.layout.operator(Skin4Springs2.bl_idname)
     
 def register():
-    bpy.utils.register_class(Skin4Springs)
+    bpy.utils.register_class(Skin4Springs2)
     bpy.types.VIEW3D_MT_object.append(menu_func)
 
 def unregister():
-    bpy.utils.unregister_class(Skin4Springs)
+    bpy.utils.unregister_class(Skin4Springs2)
     bpy.types.VIEW3D_MT_object.remove(menu_func)
     
 if __name__ == "__main__":
