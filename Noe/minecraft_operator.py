@@ -194,6 +194,10 @@ class MinecraftOperator(bpy.types.Operator):
                 obj.select = True
         bpy.ops.object.join()
 
+        for obj in bpy.context.scene.objects:
+            if obj.type == 'MESH' and obj.name.startswith("Cubo"):
+                obj.name = "MinecraftOBJ"
+
         return {'FINISHED'}
 
 def layout(self, context):
