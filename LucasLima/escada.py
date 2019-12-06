@@ -19,12 +19,12 @@ class ObjectCursorArray(bpy.types.Operator):
     bl_label = "Criar Escada"
     bl_options = {'REGISTER', 'UNDO'}
     
-    name: bpy.props.StringProperty(name="Test Property", default="A0N2")
+    name= bpy.props.StringProperty(name="Test Property", default="A0N2")
    
     def execute(self, context):
         scene = context.scene
-        cursor = scene.cursor.location
-        obj = context.active_object
+        cursor = scene.cursor_location
+        obj = scene.objects.active
         
         obj_size = context.active_object.dimensions
             
@@ -44,15 +44,20 @@ class ObjectCursorArray(bpy.types.Operator):
             for i in range(numberDegraus):
 
                 obj_new = obj.copy()
-                scene.collection.objects.link(obj_new)
+                scene.objects.link(obj_new)
 
                 bpy.ops.object.select_all( action = 'DESELECT' )
             
-                obj_new.select_set(True)
-        
-            
-                bpy.ops.transform.rotate(value=radians(angle), orient_axis='Z', orient_type='LOCAL')
-                bpy.ops.transform.translate(value=(0, obj_size.y, obj_size.z), orient_type='LOCAL')
+                obj_new.select = True
+                
+                bpy.ops.transform.rotate(value=radians(angle), axis=(0, 0, 1), constraint_axis=(False, False, True), constraint_orientation='LOCAL')
+                
+                
+                bpy.ops.transform.translate(value=(0, obj_size.y, obj_size.z), constraint_axis=(False, True, True), constraint_orientation='LOCAL')
+
+
+                #bpy.ops.transform.rotate(value=radians(angle), orient_axis='Z', orient_type='LOCAL')
+                #bpy.ops.transform.translate(value=(0, obj_size.y, obj_size.z), orient_type='LOCAL')
             
                 obj = obj_new
         

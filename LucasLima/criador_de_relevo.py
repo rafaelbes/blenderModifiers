@@ -14,7 +14,7 @@ class CreateRelief(bpy.types.Operator):
     bl_label = "Criador de relevo"         # Display name in the interface.
     bl_options = {'REGISTER', 'UNDO'}  # Enable undo for the operator.
     
-    deformacao: bpy.props.FloatProperty(name="Deformacao", default=0.555, min=0.0, max=10.0)
+    deformacao= bpy.props.FloatProperty(name="Deformacao", default=0.555, min=0.0, max=10.0)
     
     def execute(self, context):        # execute() is called when running the operator.
 
@@ -24,7 +24,12 @@ class CreateRelief(bpy.types.Operator):
         
         for vert in bm.verts:
             vert.select_set(True)
-            bpy.ops.transform.translate(value=(0, 0, uniform(self.deformacao * -1, self.deformacao)), orient_type='GIMBAL')
+            
+            
+            bpy.ops.transform.translate(value=(0, 0, uniform(self.deformacao * -1, self.deformacao)), constraint_axis=(False, False, True), constraint_orientation='GIMBAL')
+
+            #bpy.ops.transform.translate(value=(0, 0, uniform(self.deformacao * -1, self.deformacao)), orient_type='GIMBAL')
+            
             vert.select_set(False)
         
         bmesh.update_edit_mesh(me)
